@@ -57,6 +57,10 @@ and `list_workspaces` also states the account it is signed in as (`account`). Th
 called My Workspace, so the same name does not mean the same workspace. When the ids don't match, or `account` differs from the account `vizchat auth whoami` reports, first tell the user which account and which workspace each side is,
 then act as the user decides; don't pick a side and edit it on your own.
 
+When the local `vizchat` command fails, the account looks wrong, or you need to confirm whether the current folder belongs to the account it is signed in to,
+run `vizchat doctor`: it reports, item by item, the state of `vizchat` on this computer, the desktop app, the server, the account and the current
+folder, with what to do about each problem. Pass the problems and suggestions it reports on to the user as they are; do not guess on the user's behalf at steps the user has to take.
+
 ## Personal preferences
 
 Users can leave long-term preferences for agents (free-text instructions, plus leanings such as information density and narration

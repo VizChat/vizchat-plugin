@@ -1,6 +1,6 @@
 {
   "name": "vizchat",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turn ideas, documents and data into narrated storyboards, dashboards and custom visual widgets in VizChat, working locally with the vizchat CLI.",
   "skills": "./skills/",
   "interface": {

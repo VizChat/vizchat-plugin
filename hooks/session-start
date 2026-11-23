@@ -1,14 +1,40 @@
 #!/bin/sh
 # 会话开始（以及 /clear、上下文压缩之后）由 run-hook.cmd 调起；POSIX sh，bash / zsh / sh 都能跑：
-# - 没有 vizchat 命令：一行安装提示（plugin 只带 skill，操作工作区靠 CLI；装了 VizChat 桌面端则自带）；
+# - 有 vizchat 命令：一行——本地操作用它、不用云端工具，账号与当前目录归属用 `vizchat doctor` 查（不在这里查：要问桌面端、联网，
+#   拖慢每次会话启动；调用云端工具时还有 PreToolUse 钩子兜底）；
+# - 没有 vizchat 命令：一行安装提示（plugin 只带 skill，操作工作区靠 CLI）——装了 macOS 桌面端就指向它自带的那份，否则 npm；
 # - 当前目录（或它的上层）是 VizChat 工作区：一行指引——工作区 id、先加载 vizchat-basics、本地与云端只按 id 对应。
 #   不注入 skill 正文：宿主把长输出截成预览（Claude Code 把 13.6KB 的 basics 存成文件、只给模型约 2KB），skill 本身随 plugin 按需加载。
 # 不调用任何外部命令（anthropics/claude-code#43127：SessionStart 可能拿到坏掉的 PATH）：只用内建命令与参数展开。
 # 输出保持在 1KB 以内（plugin-repo 的单测把关）。
 
-# PATH 连 sh 都找不到时不下「没装 CLI」的结论
-if command -v sh >/dev/null 2>&1 && ! command -v vizchat >/dev/null 2>&1; then
-  printf '%s\n' 'VizChat: the vizchat CLI is not installed. Install it with `npm install -g vizchat` (the VizChat desktop app includes it), then sign in with `vizchat auth login`.'
+# PATH 坏了（连 sh 都找不到）时不下「没装 CLI」的结论。装了 macOS 桌面端（它自带 CLI）就指向它的「安装 vizchat 命令」，
+# 否则提示 npm。应用名与深链 scheme 是这里写死的常量（各通道一个），不回显任何外来文本。
+if command -v vizchat >/dev/null 2>&1; then
+  printf '%s\n' 'VizChat: the vizchat CLI is installed on this computer. Work on VizChat with vizchat commands rather than the VizChat cloud tools. Run `vizchat doctor` to see which account it uses, whether the current folder belongs to it, and what to fix.'
+elif command -v sh >/dev/null 2>&1; then
+  app=''
+  scheme=''
+  # 应用目录可由 VIZCHAT_APP_ROOTS（冒号分隔）覆盖，单测用它，免得结果随跑测试的机器装了什么而变
+  roots=${VIZCHAT_APP_ROOTS:-/Applications:${HOME:-/nonexistent}/Applications}
+  for candidate in 'VizChat:vizchat' 'VizChat Staging:vizchat-staging' 'VizChat Dev:vizchat-dev'; do
+    name=${candidate%%:*}
+    rest=$roots
+    while [ -n "$rest" ] && [ -z "$app" ]; do
+      root=${rest%%:*}
+      case $rest in *:*) rest=${rest#*:} ;; *) rest='' ;; esac
+      if [ -n "$root" ] && [ -d "$root/$name.app" ]; then
+        app=$name
+        scheme=${candidate#*:}
+      fi
+    done
+    [ -z "$app" ] || break
+  done
+  if [ -n "$app" ]; then
+    printf 'VizChat: the vizchat CLI is not on PATH yet. The %s desktop app includes it: in %s choose VizChat > Install vizchat command, or open %s://install-cli. It uses the account signed in to the app.\n' "$app" "$app" "$scheme"
+  else
+    printf '%s\n' 'VizChat: the vizchat CLI is not installed. Install it with `npm install -g vizchat` (the VizChat desktop app includes it), then sign in with `vizchat auth login`.'
+  fi
 fi
 
 # 从当前目录往上找 .vizchat/manifest.json；dir 为空时检查的是根目录
