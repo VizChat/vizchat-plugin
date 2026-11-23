@@ -1,0 +1,20 @@
+{
+  "name": "vizchat",
+  "version": "0.1.0",
+  "description": "Turn ideas, documents and data into narrated storyboards, dashboards and custom visual widgets in VizChat, working locally with the vizchat CLI.",
+  "author": {
+    "name": "VizChat",
+    "url": "https://vizchat.ai"
+  },
+  "homepage": "https://vizchat.ai",
+  "license": "Apache-2.0",
+  "keywords": [
+    "vizchat",
+    "storyboard",
+    "dashboard",
+    "visualization",
+    "widget",
+    "presentation"
+  ],
+  "icon": "./.claude-plugin/icon.png"
+}
