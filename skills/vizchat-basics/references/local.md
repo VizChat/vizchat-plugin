@@ -18,7 +18,7 @@ the desktop app). Folders connected to the desktop app are synced by it: `vizcha
 `--watch` is not needed.
 
 When the workspace or widget you need to change isn't on this machine yet, use `vizchat workspace clone <workspace or author/slug>` **without a directory**: the desktop app connects it at the default location
-`~/VizChat/<username>/<workspace ID>/` (if it is already connected, you get its existing location), and the path in the output is the directory to work in. When the user clicked
+`~/VizChat/<username>/<name>-<last 8 of ID>/` (on Windows, `%USERPROFILE%\VizChat\<username>\<name>-<last 8 of ID>\`); if it is already connected, you get its existing location. The path in the output is the directory to work in. When the user clicked
 "Improve this widget" in a board and asks you to change a widget, get its draft the same way. Giving a directory also works: after the clone it is registered with the desktop app. Either way, only the desktop app syncs it afterwards,
 so don't run `workspace sync --watch` on that directory. `vizchat workspace ls` also shows the local path of connected workspaces.
 
