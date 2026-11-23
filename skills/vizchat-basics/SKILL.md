@@ -62,8 +62,8 @@ run `vizchat doctor`: it reports, item by item, the state of `vizchat` on this c
 folder, with what to do about each problem. Pass the problems and suggestions it reports on to the user as they are; do not guess on the user's behalf at steps the user has to take.
 
 `vizchat` connects to the VizChat desktop app on this computer and to the server. If your commands run inside the host's sandbox (some coding tools turn off network access by default), it reports `EPERM`, cannot reach the server,
-or `vizchat doctor` says it is inside a sandbox: then follow the host's flow to ask for that `vizchat` command to be run again outside the sandbox (escalated permissions), for the user to approve. Do not switch to the cloud tools because of this,
-and do not treat it as the desktop app or the network being broken.
+or `vizchat doctor` says it is inside a sandbox: then use your command tool to run the same `vizchat` command again with a request to run it outside the sandbox (escalated permissions), for the user to approve in the confirmation that appears,
+and carry on with what you were doing. Do not ask the user to run it in a terminal themselves: the result would not come back into the conversation and you could not continue. Do not switch to the cloud tools because of this, and do not treat it as the desktop app or the network being broken.
 
 ## Personal preferences
 
