@@ -22,15 +22,16 @@ vizchat auth login
 | Agent       | How                                                                                                                                                                                                                   |
 | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Claude Code | `/plugin marketplace add VizChat/vizchat-plugin`, then `/plugin install vizchat@vizchat-plugin`                                                                                                                                     |
-| Codex       | `codex plugin marketplace add VizChat/vizchat-plugin`, then install **vizchat** from `/plugins` (review and trust its hooks in `/hooks`)                                                                                            |
+| Codex       | `codex plugin marketplace add VizChat/vizchat-plugin`, then install **vizchat** from `/plugins` (review and trust its hooks in `/hooks`). `vizchat` talks to the VizChat desktop app and the server, which Codex's default sandbox blocks: when Codex asks to run a `vizchat` command outside the sandbox, approve it |
 | Kimi Code   | `/plugins install https://github.com/VizChat/vizchat-plugin`, then `/reload`                                                                                                                                                        |
 | Cursor      | Clone this repository into `~/.cursor/plugins/local/vizchat/` and run **Reload Window**                                                                                                                               |
 | OpenCode    | Clone this repository and add its `skills` folder to `skills` in `opencode.json` (for example `"skills": ["~/vizchat-plugin/skills"]`); copy `commands/*.md` into `~/.config/opencode/command/` for the slash command |
 
 ## Hooks (Claude Code and Codex)
 
-- **SessionStart** — in a VizChat workspace, tells the agent which workspace this folder is (its id) and to load the
-  vizchat-basics skill; without the `vizchat` CLI, prints a one-line install hint.
+- **SessionStart** — with the `vizchat` CLI installed, tells the agent to use it and to run `vizchat doctor` to check
+  the account and the current folder; without it, prints a one-line install hint. In a VizChat workspace it also says which
+  workspace this folder is (its id) and to load the vizchat-basics skill.
 - **PreToolUse** — when the `vizchat` CLI is installed and signed in, declines the VizChat cloud connector's tools so
   the agent works on your local copy instead.
 

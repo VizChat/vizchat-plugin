@@ -61,6 +61,10 @@ When the local `vizchat` command fails, the account looks wrong, or you need to 
 run `vizchat doctor`: it reports, item by item, the state of `vizchat` on this computer, the desktop app, the server, the account and the current
 folder, with what to do about each problem. Pass the problems and suggestions it reports on to the user as they are; do not guess on the user's behalf at steps the user has to take.
 
+`vizchat` connects to the VizChat desktop app on this computer and to the server. If your commands run inside the host's sandbox (some coding tools turn off network access by default), it reports `EPERM`, cannot reach the server,
+or `vizchat doctor` says it is inside a sandbox: then follow the host's flow to ask for that `vizchat` command to be run again outside the sandbox (escalated permissions), for the user to approve. Do not switch to the cloud tools because of this,
+and do not treat it as the desktop app or the network being broken.
+
 ## Personal preferences
 
 Users can leave long-term preferences for agents (free-text instructions, plus leanings such as information density and narration
