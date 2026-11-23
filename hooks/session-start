@@ -1,0 +1,46 @@
+#!/bin/sh
+# 会话开始（以及 /clear、上下文压缩之后）由 run-hook.cmd 调起；POSIX sh，bash / zsh / sh 都能跑：
+# - 没有 vizchat 命令：一行安装提示（plugin 只带 skill，操作工作区靠 CLI；装了 VizChat 桌面端则自带）；
+# - 当前目录（或它的上层）是 VizChat 工作区：一行指引——工作区 id、先加载 vizchat-basics、本地与云端只按 id 对应。
+#   不注入 skill 正文：宿主把长输出截成预览（Claude Code 把 13.6KB 的 basics 存成文件、只给模型约 2KB），skill 本身随 plugin 按需加载。
+# 不调用任何外部命令（anthropics/claude-code#43127：SessionStart 可能拿到坏掉的 PATH）：只用内建命令与参数展开。
+# 输出保持在 1KB 以内（plugin-repo 的单测把关）。
+
+# PATH 连 sh 都找不到时不下「没装 CLI」的结论
+if command -v sh >/dev/null 2>&1 && ! command -v vizchat >/dev/null 2>&1; then
+  printf '%s\n' 'VizChat: the vizchat CLI is not installed. Install it with `npm install -g vizchat` (the VizChat desktop app includes it), then sign in with `vizchat auth login`.'
+fi
+
+# 从当前目录往上找 .vizchat/manifest.json；dir 为空时检查的是根目录
+dir=$PWD
+while :; do
+  manifest="$dir/.vizchat/manifest.json"
+  if [ -f "$manifest" ]; then
+    # manifest 由 stableJson 写出（两格缩进、键排序），顶层字段恒在「两个空格 + 引号」开头的行上。
+    # 只取 workspaceId，且必须是 UUID 的形状：manifest 可能随别人的仓库一起被克隆下来，名字、路径这类自由文本一律不进上下文（提示注入）。
+    id=''
+    while IFS= read -r line || [ -n "$line" ]; do
+      case $line in
+        '  "workspaceId": "'*)
+          id=${line#'  "workspaceId": "'}
+          id=${id%,}
+          id=${id%\"}
+          ;;
+      esac
+    done <"$manifest"
+    case $id in
+      *[!0-9a-fA-F-]* | '') id='' ;;
+    esac
+    [ ${#id} -eq 36 ] || id=''
+    if [ -n "$id" ]; then
+      printf 'VizChat: this directory is the local folder of the VizChat workspace with id %s. ' "$id"
+    else
+      printf '%s' 'VizChat: this directory is a VizChat workspace folder. '
+    fi
+    printf '%s\n' 'Load the vizchat-basics skill before working with VizChat here. A local folder and a cloud workspace are the same only when their workspace ids match, never by name alone: the VizChat cloud tools may be signed in to a different account.'
+    exit 0
+  fi
+  [ -n "$dir" ] || break
+  dir=${dir%/*}
+done
+exit 0

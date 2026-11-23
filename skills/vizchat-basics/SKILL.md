@@ -52,6 +52,11 @@ Decide in this order, and once decided, don't mix the two:
 
 Don't mix them because two copies of the same workspace edited on both sides end up in a merge, and reading from the cloud after editing locally without `sync` gives you the old version.
 
+**A local folder and a cloud workspace correspond only by id, never by name.** A local workspace's id is the `workspaceId` in `.vizchat/manifest.json`; the workspaces the cloud tools return each carry an id,
+and `list_workspaces` also states the account it is signed in as (`account`). The cloud tools and the local `vizchat` may be signed in to two different accounts, and every account has a default workspace
+called My Workspace, so the same name does not mean the same workspace. When the ids don't match, or `account` differs from the account `vizchat auth whoami` reports, first tell the user which account and which workspace each side is,
+then act as the user decides; don't pick a side and edit it on your own.
+
 ## Personal preferences
 
 Users can leave long-term preferences for agents (free-text instructions, plus leanings such as information density and narration

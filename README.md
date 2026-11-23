@@ -29,9 +29,13 @@ vizchat auth login
 
 ## Hooks (Claude Code and Codex)
 
-- **SessionStart** — in a VizChat workspace, loads the basics skill; without the `vizchat` CLI, prints a one-line install hint.
+- **SessionStart** — in a VizChat workspace, tells the agent which workspace this folder is (its id) and to load the
+  vizchat-basics skill; without the `vizchat` CLI, prints a one-line install hint.
 - **PreToolUse** — when the `vizchat` CLI is installed and signed in, declines the VizChat cloud connector's tools so
   the agent works on your local copy instead.
+
+On Windows the hooks run with Git Bash ([Git for Windows](https://gitforwindows.org/)); without it the skills still work,
+only the hooks are skipped.
 
 ## About this repository
 
